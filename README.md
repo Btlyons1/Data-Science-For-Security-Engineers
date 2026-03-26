@@ -1,11 +1,11 @@
 # Data Science for Security Engineers
 
-A universally comprehensive, hands-on guide designed specifically for Detection Engineers to apply statistical thinking, behavioral modeling, and machine learning to security telemetry. This notebook bridges the gap between mathematically brittle SIEM queries and robust, data-driven Threat Intelligence.
+A comprehensive, hands-on guide designed specifically for Detection Engineers to apply statistical thinking, behavioral modeling, and machine learning to security telemetry. This notebook bridges the gap between mathematically brittle SIEM queries and robust, data-driven Threat Intelligence.
 
 ## Overview
 Security data is rarely "normal" in a textbook sense. Traditional statistics (Mean, Standard Deviation, Pearson Correlation) fail spectacularly when applied to violently heavy-tailed subnet bytes or high-cardinality user behaviors. 
 
-This repository contains the complete `Data_Science_for_Security_Engineers.ipynb` notebook. It is a massive, **49-Chapter curriculum** guiding you from foundational Exploratory Data Analysis (EDA) all the way through Extreme Value Theory, Bleeding-edge Graph Topological Anomaly Detection (Oddball), and Deep Learning Autoencoders.
+This repository contains the complete `Data_Science_for_Security_Engineers.ipynb` notebook. It is a, **49-Chapter curriculum** guiding you from foundational Exploratory Data Analysis (EDA) all the way through Extreme Value Theory, Graph Topological Anomaly Detection (Oddball), and Deep Learning Autoencoders.
 
 ### Curriculum Structure
 1. **Foundations (EDA & Metrics):** Exploratory Data Analysis, Robust Statistics (Median, MAD), Visualization Pitfalls.
@@ -52,5 +52,5 @@ Open `Data_Science_for_Security_Engineers.ipynb` and begin running the cells seq
 
 ## Style & Philosophy
 - **Geared for Detection Engineers:** Every single algorithm is immediately grounded in a concrete security application (e.g., separating Beaconing C2 from normal Slack telemetry, or finding a Horizontal Port Scan utilizing Graphic Node Densities).
-- **Robust Algorithms over Classical:** We aggressively emphasize robust statistics (MAD) and nonparametric distances over classical parametric limits to handle the extreme outliers permanently natively to security events.
+- **Robust Algorithms over Classical:** We emphasize robust statistics (MAD) and nonparametric distances over classical parametric limits to handle the extreme outliers permanently natively to security events.
 - **Deep Explanations:** Beyond surface-level code snippets, this guide provides the *intuition* behind the math, and explains exactly *why and where* these algorithms will fail in production environments.
