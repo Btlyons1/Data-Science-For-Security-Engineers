@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "detection_baseline"
+version = "0.1.0"
+description = "A detection engineering library providing statistical, probabilistic, and behavioral baseline abstractions for notebook analysis."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.2.0",
+    "statsmodels>=0.14.0",
+    "networkx>=3.0",
+    "nltk>=3.8.1",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.2"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["detection_baseline*"]
