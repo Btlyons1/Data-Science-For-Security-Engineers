@@ -9,7 +9,10 @@ from detection_baseline.statistics import (
     benford_analysis,
     calculate_ewma,
     detect_cusum,
-    chi_square_shift
+    chi_square_shift,
+    dynamic_time_warping_distance,
+    detect_s_h_esd,
+    calculate_evt_threshold
 )
 
 def test_calculate_iqr():
@@ -121,6 +124,42 @@ def test_chi_square_shift():
     observed_scan = {'200': 598, '302': 42, '404': 319, '500': 41}
     res_scan = chi_square_shift(observed_scan, expected)
     assert res_scan['is_shift_detected'] == True
+
+
+def test_dynamic_time_warping_distance():
+    s1 = [1, 2, 3, 4]
+    s2 = [1, 1, 2, 2, 3, 3, 4, 4]
+    dist = dynamic_time_warping_distance(s1, s2)
+    # The two sequences are identical under time warping, distance should be 0.0
+    assert abs(dist - 0.0) < 1e-5
+    
+    s3 = [1, 5, 3, 4]
+    dist2 = dynamic_time_warping_distance(s1, s3)
+    assert dist2 > 0.0
+
+
+def test_detect_s_h_esd():
+    # Generate seasonal data: daily pattern of 24 points
+    np.random.seed(42)
+    base = np.sin(np.linspace(0, 4 * np.pi, 96)) * 10
+    noise = np.random.normal(0, 1, 96)
+    data = base + noise
+    
+    # Add an anomaly
+    data[50] = 50.0
+    
+    res = detect_s_h_esd(data, period=24, alpha=0.05, max_anomalies=0.1)
+    assert 'error' not in res
+    assert 50 in res['anomaly_indices']
+    assert res['anomalies_mask'][50] == True
+
+
+def test_calculate_evt_threshold():
+    np.random.seed(42)
+    data = np.random.exponential(scale=10.0, size=200)
+    thresh = calculate_evt_threshold(data, extreme_quantile=0.98)
+    assert thresh > np.percentile(data, 90)
+    assert thresh < 100.0
 
 
 

@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import math
 from scipy.stats import chi2
 from collections.abc import Sequence
 from typing import Union, Any
@@ -11,10 +13,7 @@ def calculate_detection_effectiveness(
     """
     Calculate the real-world effectiveness of a detection rule.
     
-    This uses Bayes' Theorem to answer: 
-    "When this alert fires, what's the probability it's a real attack?"
-    
-    This is the PRECISION of your detection.
+    This uses Bayes' Theorem to answer the core question of detection effectiveness: given that this alert fired, what is the probability it represents a real attack? The result is the precision of the detection rule.
     
     Parameters:
     -----------
@@ -253,3 +252,26 @@ def optimize_detection_threshold(
         'tpr': best_tp / total_pos if total_pos > 0 else 0.0,
         'fpr': best_fp / total_neg if total_neg > 0 else 0.0
     }
+
+
+def naive_bayes_risk_score(historical_events: pd.DataFrame, test_event: dict[str, Any], features: list[str]) -> float:
+    """
+    Calculate the joint log-likelihood score of a test event under historical (benign) baseline.
+    """
+    total_history = len(historical_events)
+    if total_history == 0:
+        return 0.0
+        
+    log_likelihood = 0.0
+    for feature in features:
+        val = test_event.get(feature)
+        if val is None:
+            continue
+            
+        match_count = int((historical_events[feature] == val).sum())
+        num_unique_classes = historical_events[feature].nunique()
+        
+        prob = (match_count + 1) / (total_history + num_unique_classes)
+        log_likelihood += math.log(prob)
+        
+    return log_likelihood

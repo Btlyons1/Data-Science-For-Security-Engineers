@@ -42,7 +42,13 @@ wheels/
 
 # Temporary Data Files (prevent accidentally committing 5GB telemetry datasets)
 *.csv
-*.json 
+*.json
 *.sqlite
 *.db
 *.log
+
+# AI Assistant Configuration
+.agents/
+
+# Temporary notebook copies
+copy.ipynb

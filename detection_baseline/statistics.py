@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import median_abs_deviation, chisquare
+from scipy.stats import median_abs_deviation, chisquare, t, genpareto
 from collections.abc import Sequence
 from typing import Union, Any
 
@@ -27,9 +27,7 @@ def calculate_iqr(data: Union[np.ndarray, Sequence[float]]) -> tuple[float, floa
 
 def build_robust_baseline(data: Union[np.ndarray, Sequence[float]], name: str = 'metric') -> dict[str, float]:
     """
-    Build a robust baseline using median and MAD.
-    
-    This is the recommended approach for security data.
+    Build a robust baseline using median and MAD, which resists the outliers and skewed distributions common in security telemetry.
     
     Parameters:
     -----------
@@ -95,9 +93,7 @@ def calculate_zscore(value: Union[float, np.ndarray], data: Union[np.ndarray, Se
 
 def modified_zscore(values: Union[np.ndarray, Sequence[float]]) -> np.ndarray:
     """
-    Calculate modified z-scores using median and MAD.
-    
-    This is the recommended method for security anomaly detection.
+    Calculate modified z-scores using median and MAD, a robust scoring method for security anomaly detection that handles heavy-tailed distributions better than standard Z-scores.
     
     Interpretation:
     - |score| > 3.5 is commonly used as the outlier threshold
@@ -402,5 +398,127 @@ def chi_square_shift(observed: dict[str, int], expected: dict[str, float]) -> di
         'observed_counts': obs_counts.tolist(),
         'expected_counts': exp_counts.tolist()
     }
+
+
+def dynamic_time_warping_distance(s1: Union[np.ndarray, Sequence[float]], s2: Union[np.ndarray, Sequence[float]]) -> float:
+    """
+    Calculate Dynamic Time Warping (DTW) distance between two 1D arrays.
+    """
+    a1 = np.array(s1, dtype=float)
+    a2 = np.array(s2, dtype=float)
+    n = len(a1)
+    m = len(a2)
+    dtw = np.full((n + 1, m + 1), np.inf)
+    dtw[0, 0] = 0.0
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            cost = abs(a1[i - 1] - a2[j - 1])
+            dtw[i, j] = cost + min(dtw[i - 1, j], dtw[i, j - 1], dtw[i - 1, j - 1])
+    return float(dtw[n, m])
+
+
+def _generalized_esd(x: np.ndarray, k: int, alpha: float) -> list[int]:
+    """
+    Internal helper implementing Generalized Extreme Studentized Deviate test.
+    """
+    n = len(x)
+    arr = x.copy().astype(float)
+    indices = list(range(n))
+    R = []
+    lam = []
+    removed_indices = []
+    
+    for i in range(1, k + 1):
+        mean = np.mean(arr)
+        std = np.std(arr, ddof=1)
+        if std == 0:
+            break
+        abs_diff = np.abs(arr - mean)
+        max_idx = np.argmax(abs_diff)
+        R_i = abs_diff[max_idx] / std
+        
+        df = n - i - 1
+        if df <= 0:
+            break
+        p = 1.0 - alpha / (2.0 * (n - i + 1))
+        t_val = t.ppf(p, df)
+        num = (n - i) * t_val
+        den = np.sqrt((n - i - 1 + t_val**2) * (n - i + 1))
+        lam_i = num / den
+        
+        R.append(R_i)
+        lam.append(lam_i)
+        
+        orig_idx = indices[max_idx]
+        removed_indices.append(orig_idx)
+        
+        arr = np.delete(arr, max_idx)
+        indices.pop(max_idx)
+        
+    num_anomalies = 0
+    for i in range(len(R)):
+        if R[i] > lam[i]:
+            num_anomalies = i + 1
+            
+    return removed_indices[:num_anomalies]
+
+
+def detect_s_h_esd(data: Union[np.ndarray, Sequence[float]], period: int = 24, alpha: float = 0.05, max_anomalies: float = 0.1) -> dict:
+    """
+    Perform Seasonal Hybrid Extreme Studentized Deviate (S-H-ESD) anomaly detection.
+    """
+    arr = np.array(data, dtype=float)
+    n = len(arr)
+    if n < period * 2:
+        return {'error': 'Data length must be at least twice the period.'}
+        
+    from statsmodels.tsa.seasonal import seasonal_decompose
+    decomp = seasonal_decompose(arr, period=period, model='additive', extrapolate_trend='freq')
+    
+    resid = decomp.resid
+    median = np.median(resid)
+    mad = np.median(np.abs(resid - median))
+    if mad == 0:
+        mad = 1.0
+    robust_resid = (resid - median) / mad
+    
+    k = max(1, int(n * max_anomalies))
+    anomaly_indices = _generalized_esd(robust_resid, k, alpha)
+    
+    anomalies_mask = np.zeros(n, dtype=bool)
+    anomalies_mask[anomaly_indices] = True
+    
+    return {
+        'anomaly_indices': sorted(anomaly_indices),
+        'anomalies_mask': anomalies_mask.tolist(),
+        'residual': resid.tolist(),
+        'robust_residual': robust_resid.tolist(),
+        'trend': decomp.trend.tolist(),
+        'seasonal': decomp.seasonal.tolist()
+    }
+
+
+def calculate_evt_threshold(data: Union[np.ndarray, Sequence[float]], extreme_quantile: float = 0.98) -> float:
+    """
+    Calculate threshold under Peak-Over-Threshold (POT) framework using Generalized Pareto Distribution (GPD).
+    """
+    arr = np.array(data, dtype=float)
+    u = float(np.percentile(arr, 90))
+    excesses = arr[arr > u] - u
+    if len(excesses) < 5:
+        return float(np.percentile(arr, extreme_quantile * 100))
+        
+    c, _, scale = genpareto.fit(excesses, floc=0)
+    
+    n = len(arr)
+    N = len(excesses)
+    prob = (n / N) * (1.0 - extreme_quantile)
+    
+    if abs(c) < 1e-9:
+        t_val = u - scale * np.log(prob)
+    else:
+        t_val = u + (scale / c) * (prob**(-c) - 1.0)
+        
+    return float(t_val)
 
 

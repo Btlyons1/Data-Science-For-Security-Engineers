@@ -3,7 +3,8 @@ from detection_baseline.probabilistic import (
     required_fpr_for_precision,
     calculate_precision,
     fishers_combined_p,
-    optimize_detection_threshold
+    optimize_detection_threshold,
+    naive_bayes_risk_score
 )
 
 def test_calculate_detection_effectiveness():
@@ -54,3 +55,25 @@ def test_optimize_detection_threshold():
     assert res['minimized_cost'] == 0.0
     assert res['true_positives'] == 3
     assert res['false_positives'] == 0
+
+
+def test_naive_bayes_risk_score():
+    import pandas as pd
+    
+    # 10 historical events (benign logins)
+    history = pd.DataFrame({
+        'username': ['user1']*10,
+        'country': ['US']*8 + ['UK']*2,
+        'device': ['macOS']*9 + ['Windows']*1
+    })
+    
+    # Normal test event (matching US, macOS)
+    normal_event = {'username': 'user1', 'country': 'US', 'device': 'macOS'}
+    score_normal = naive_bayes_risk_score(history, normal_event, ['username', 'country', 'device'])
+    
+    # Anomalous test event (matching UK, Windows - or unseen CN, Linux)
+    anom_event = {'username': 'user1', 'country': 'CN', 'device': 'Linux'}
+    score_anom = naive_bayes_risk_score(history, anom_event, ['username', 'country', 'device'])
+    
+    # Anomalous event should have much lower log-likelihood (more negative)
+    assert score_anom < score_normal

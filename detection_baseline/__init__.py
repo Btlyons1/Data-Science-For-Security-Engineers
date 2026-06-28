@@ -12,19 +12,27 @@ from detection_baseline.statistics import (
     benford_analysis,
     calculate_ewma,
     detect_cusum,
-    chi_square_shift
+    chi_square_shift,
+    dynamic_time_warping_distance,
+    detect_s_h_esd,
+    calculate_evt_threshold
 )
 from detection_baseline.probabilistic import (
     calculate_detection_effectiveness,
     required_fpr_for_precision,
     calculate_precision,
     fishers_combined_p,
-    optimize_detection_threshold
+    optimize_detection_threshold,
+    naive_bayes_risk_score
 )
 from detection_baseline.behavioral import (
     sequence_anomaly_score,
     jaccard,
-    shannon_entropy
+    shannon_entropy,
+    detect_sequence_anomalies,
+    detect_hmm_anomalies,
+    detect_pagerank_spikes,
+    find_association_rules
 )
 from detection_baseline.automation import (
     analyze_timing_regularity,
@@ -34,6 +42,9 @@ from detection_baseline.automation import (
 )
 from detection_baseline.detectors import (
     FirstSeenDetector
+)
+from detection_baseline.recommender import (
+    recommend_anomaly_detector
 )
 from detection_baseline import datasets
 
@@ -50,18 +61,27 @@ __all__ = [
     'calculate_ewma',
     'detect_cusum',
     'chi_square_shift',
+    'dynamic_time_warping_distance',
+    'detect_s_h_esd',
+    'calculate_evt_threshold',
     'calculate_detection_effectiveness',
     'required_fpr_for_precision',
     'calculate_precision',
     'fishers_combined_p',
     'optimize_detection_threshold',
+    'naive_bayes_risk_score',
     'sequence_anomaly_score',
     'jaccard',
     'shannon_entropy',
+    'detect_sequence_anomalies',
+    'detect_hmm_anomalies',
+    'detect_pagerank_spikes',
+    'find_association_rules',
     'analyze_timing_regularity',
     'analyze_session_burstiness',
     'fano_factor',
     'analyze_ai_agent_autonomy',
     'FirstSeenDetector',
+    'recommend_anomaly_detector',
     'datasets'
 ]

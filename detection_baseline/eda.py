@@ -7,7 +7,7 @@ from typing import Any, Union
 
 def perform_eda(df: pd.DataFrame, column: str) -> dict[str, Any]:
     """
-    Perform basic reconnaissance on a data column.
+    Perform basic exploratory data analysis on a data column.
     This should be your FIRST step before any analysis.
     
     Parameters:
@@ -22,7 +22,7 @@ def perform_eda(df: pd.DataFrame, column: str) -> dict[str, Any]:
     dict
         A dictionary containing the summary metrics.
     """
-    print(f'=== Reconnaissance: {column} ===\n')
+    print(f'=== exploratory data analysis: {column} ===\n')
     
     data = df[column]
     

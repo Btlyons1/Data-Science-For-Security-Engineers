@@ -5,22 +5,18 @@ A comprehensive, hands-on guide designed for Detection Engineers to apply statis
 ## Overview
 Security data rarely follows a standard normal distribution. Traditional statistical methods (such as mean, standard deviation, and Pearson correlation) are sensitive to outliers and can produce misleading results when applied to heavy-tailed security telemetry, such as subnet byte transfers or high-cardinality user logs.
 
-This repository contains the complete `Data_Science_for_Security_Engineers.ipynb` notebook. It is a **50-chapter curriculum** covering everything from foundational Exploratory Data Analysis (EDA) to advanced methods like Extreme Value Theory, Graph Topological Anomaly Detection (Oddball), and Deep Learning Autoencoders.
+This repository contains the complete `Data_Science_for_Security_Engineers.ipynb` notebook. It is a **62-chapter curriculum** covering everything from foundational Exploratory Data Analysis (EDA) to advanced methods like Extreme Value Theory, Graph Topological Anomaly Detection (Oddball), and Deep Learning Autoencoders.
 
 ### Curriculum Structure
-1. **Foundations (EDA & Metrics):** Exploratory Data Analysis, Robust Statistics (Median, MAD), Visualization Pitfalls.
-2. **Distributions:** Normal vs Log-Normal vs Poisson, and how the distribution of your data determines which mathematical models are appropriate.
-3. **Outlier Detection:** Z-Scores, Log-Normal Transformations, Mahalanobis Distance.
-4. **Frequencies & Probability:** Burst Analysis, HyperLogLog, Jaccard Similarity, Base Rate Problem (False Positive math), Pearson vs Spearman Correlation.
-5. **Time-Series Analysis:** Stationarity, Seasonality, Beaconing Detection (Jitter & Modular Arithmetic).
-6. **Advanced & Exotic Outliers:** 
-    - Matrix Profiles (Time-Series Discards)
-    - Local Outlier Factor (LOF)
-    - Isolation Forests & DBSCAN 
-    - One-Class SVM (Novelty Detection)
-    - Autoencoders (Deep Learning)
-    - Oddball (Graph-Based Ego-Network Topologies)
-7. **The Horizon:** A theoretical look at the Bleeding Edge (Survival Analysis, SMOTE, Bayesian Causality, Reinforcement Learning, Conformal Prediction).
+1. **Foundations (EDA & Metrics):** Exploratory Data Analysis, Measuring Center (Mean vs. Median), Measuring Spread (IQR, MAD, Skewness, Kurtosis), Visualizing Distributions, Visualization Pitfalls.
+2. **Distributions:** What a distribution is, why your data's shape determines which models apply, Normal vs. Heavy-Tailed vs. Poisson distributions.
+3. **Outlier Detection:** Z-Scores, Modified Z-Scores (MAD), Log-Normal Transformations, Mahalanobis Distance, Local Outlier Factor (LOF), One-Class SVM (Novelty Detection).
+4. **Frequencies & Probability:** Frequency Analysis, Ratios and Rates, Cardinality (HyperLogLog), Conditional Probability, Bayes' Theorem, Base Rate Problem (False Positive math), Building Cohorts, Deviation from Peers, Correlation and Simpson's Paradox.
+5. **Time-Series & Sequence Analysis:** Stationarity, Seasonality, Beaconing Detection (Jitter and Modular Arithmetic), Sequence Analysis, Matrix Profiles (Time-Series Anomalies).
+6. **Behavioral & Risk Detection:** First-Seen Entity Detection, AI Agent Behavior Analysis, Risk Score Construction, Threshold Selection with Cost Optimization.
+7. **Statistical Baselines & Laws:** Signal Smoothing (EWMA), Distribution Comparison (Chi-Square), Extreme Value Theory (EVT/POT), Statistical Laws (Benford's Law), String Metrics and Shannon Entropy.
+8. **Advanced Methods:** Dimensionality Reduction (PCA), Hidden Markov Models (HMMs), Unsupervised Anomaly Detection (Isolation Forest, DBSCAN), Advanced Time-Series Forecasting, Deep Learning Autoencoders, Graph Analytics, Graph-Based Outliers (Oddball).
+9. **Applied Security Data Science:** Feature Engineering, Supervised Learning and Labeling, Evaluating Imbalanced Models, NLP and Embeddings, Concept Drift and Model Decay, CUSUM Change-Point Detection, Log-Likelihood Ratio (LLR), Fisher's Method for Combining Weak Signals, Conformal Prediction, Advanced Anomaly Suite, UEBA, and SHAP Model Explainability.
 
 ## Prerequisites
 
@@ -56,9 +52,10 @@ This repository also packages the core statistical, probabilistic, and behaviora
 
 ### Library Structure
 - **`eda.py`**: Performs exploratory reconnaissance and decides on robust centering metrics (mean vs. median).
-- **`statistics.py`**: Handles robust IQR/MAD calculations, modified Z-scores, adaptive EWMA baselines, CUSUM low-and-slow tracking, and Benford's Law distribution analysis.
-- **`probabilistic.py`**: Implements Bayes' Theorem precision effectiveness, Fisher's Combined Probability test, and cost-benefit threshold optimization.
-- **`behavioral.py`**: Measures transition anomaly scores (bigrams), Jaccard similarity, and Shannon entropy.
+- **`statistics.py`**: Handles robust IQR/MAD calculations, modified Z-scores, adaptive EWMA baselines, CUSUM tracking, Benford's Law distribution analysis, Seasonal Hybrid ESD (S-H-ESD) time-series baselines, Dynamic Time Warping (DTW) distance, and Extreme Value Theory (EVT/POT) thresholding.
+- **`probabilistic.py`**: Implements Bayes' Theorem precision calculations, Fisher's Combined Probability test, cost-benefit threshold optimization, and the Naive Bayes multi-feature login risk score.
+- **`behavioral.py`**: Measures transition anomaly scores, Jaccard similarity, Shannon entropy, Markov Chain command sequence anomalies, Hidden Markov Model (HMM) log-likelihood calculations, PageRank centrality spikes, and Apriori association rules.
+- **`recommender.py`**: Profiles dataset attributes (skewness, kurtosis, stationarity, cardinality, and dimensions) to recommend the optimal anomaly detection method and data transformations.
 - **`automation.py`**: Analyzes timing regularity (Coefficient of Variation), session burstiness (Fano factor), and AI agent autonomy.
 - **`detectors.py`**: Provides stateful first-seen entity detectors with contextual risk prioritization.
 - **`datasets.py`**: Loads sample datasets (DGA domains, Benford-conforming network flows, and peer cohorts) for testing detection logic.
@@ -94,5 +91,5 @@ print(f"Optimal alert threshold: {optimization['optimal_threshold']:.2f}")
 
 ## Style & Philosophy
 - **Grounded in Security Context:** Each algorithm is mapped directly to a concrete security use case, such as separating C2 beaconing from normal HTTP telemetry, or identifying horizontal scans using network graph metrics.
-- **Focus on Robust Estimators:** The curriculum emphasizes robust statistics (like Median Absolute Deviation) and non-parametric distances rather than classical parametric assumptions, allowing you to model the extreme outliers native to security telemetry.
+- **Focus on Robust Estimators:** The curriculum emphasizes robust statistics (like Median Absolute Deviation) and non-parametric distances because classical parametric assumptions break down against the heavy-tailed distributions and extreme outliers native to security telemetry.
 - **Practical Limitations:** Beyond code snippets, this guide explains the mathematical reasoning and discusses the failure modes and operational constraints of each detection in production.
