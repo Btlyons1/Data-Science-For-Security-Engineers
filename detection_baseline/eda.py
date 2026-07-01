@@ -79,7 +79,7 @@ def perform_eda(df: pd.DataFrame, column: str) -> dict[str, Any]:
         # Check for skewness
         skew = float(stats.skew(data.dropna())) if len(data.dropna()) > 2 else 0.0
         if abs(skew) > 1:
-            print(f'  ⚠️  Highly skewed (skewness = {skew:.2f})')
+            print(f'  Highly skewed (skewness = {skew:.2f})')
             print(f'       Consider using median instead of mean!')
             
         result.update({
@@ -145,12 +145,12 @@ def choose_center_measure(data: Union[np.ndarray, pd.Series, list[float], Sequen
     
     # Provide recommendation
     if abs(skewness) > 1 or ratio > 1.3 or ratio < 0.7:
-        print('📊 RECOMMENDATION: Use the MEDIAN')
+        print(' RECOMMENDATION: Use the MEDIAN')
         print('   Reason: Data is skewed or has outliers')
         print(f'   Baseline value: {median_val:.2f}\n')
         return median_val
     else:
-        print('📊 RECOMMENDATION: Mean is acceptable')
+        print(' RECOMMENDATION: Mean is acceptable')
         print('   Reason: Data is relatively symmetric')
         print(f'   Baseline value: {mean_val:.2f}\n')
         return mean_val

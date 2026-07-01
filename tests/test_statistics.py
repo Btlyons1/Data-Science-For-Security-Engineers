@@ -12,7 +12,23 @@ from detection_baseline.statistics import (
     chi_square_shift,
     dynamic_time_warping_distance,
     detect_s_h_esd,
-    calculate_evt_threshold
+    calculate_evt_threshold,
+    calculate_mad,
+    cohort_zscore,
+    calculate_skew_kurtosis,
+    plot_qq,
+    calculate_poisson_pmf,
+    calculate_mahalanobis_distance,
+    calculate_chi2_threshold,
+    decompose_time_series,
+    run_adfuller_test,
+    calculate_rfft,
+    apply_median_filter,
+    apply_savgol_filter,
+    run_ks_test,
+    calculate_wasserstein_distance,
+    run_exponential_smoothing,
+    run_chisquare_test
 )
 
 def test_calculate_iqr():
@@ -160,6 +176,107 @@ def test_calculate_evt_threshold():
     thresh = calculate_evt_threshold(data, extreme_quantile=0.98)
     assert thresh > np.percentile(data, 90)
     assert thresh < 100.0
+
+
+def test_calculate_mad():
+    data = [1, 2, 3, 4, 5]
+    assert calculate_mad(data) == 1.0
+
+
+def test_cohort_zscore():
+    assert cohort_zscore(15, 11, 2) == 0.6745 * 2.0
+    assert cohort_zscore(5, 5, 0) == 0.0
+    assert cohort_zscore(10, 5, 0) == float('inf')
+
+
+def test_calculate_skew_kurtosis():
+    np.random.seed(42)
+    data = np.random.normal(0, 1, 100)
+    s, k = calculate_skew_kurtosis(data)
+    assert abs(s) < 0.5
+    assert abs(k) < 1.0
+
+
+def test_plot_qq():
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    plot_qq([1, 2, 3], ax=ax)
+    plt.close(fig)
+
+
+def test_calculate_poisson_pmf():
+    probs = calculate_poisson_pmf([0, 1], lam=1.0)
+    assert len(probs) == 2
+    assert abs(probs[0] - np.exp(-1.0)) < 1e-5
+
+
+def test_calculate_mahalanobis_distance():
+    mean = [0.0, 0.0]
+    cov = [[1.0, 0.0], [0.0, 1.0]]
+    inv_cov = np.linalg.inv(cov)
+    dist = calculate_mahalanobis_distance([1.0, 0.0], mean, inv_cov)
+    assert abs(dist - 1.0) < 1e-5
+
+
+def test_calculate_chi2_threshold():
+    val = calculate_chi2_threshold(0.95, df=2)
+    assert val > 5.0
+
+
+def test_decompose_time_series():
+    import pandas as pd
+    data = pd.Series(np.sin(np.linspace(0, 10, 100)))
+    res = decompose_time_series(data, period=10)
+    assert res.seasonal is not None
+
+
+def test_run_adfuller_test():
+    data = np.random.normal(0, 1, 100)
+    res = run_adfuller_test(data)
+    assert len(res) >= 2
+
+
+def test_calculate_rfft():
+    yf, xf = calculate_rfft([1, 2, 3, 4], d=1.0)
+    assert len(yf) == 3
+    assert len(xf) == 3
+
+
+def test_apply_median_filter():
+    res = apply_median_filter([1, 10, 1], kernel_size=3)
+    assert len(res) == 3
+    assert res[1] == 1.0
+
+
+def test_apply_savgol_filter():
+    res = apply_savgol_filter(np.ones(20), window_length=5, polyorder=2)
+    assert len(res) == 20
+    assert abs(res[10] - 1.0) < 1e-5
+
+
+def test_run_ks_test():
+    stat, p = run_ks_test([1, 2, 3], [1, 2, 3])
+    assert stat == 0.0
+    assert p == 1.0
+
+
+def test_calculate_wasserstein_distance():
+    dist = calculate_wasserstein_distance([1, 2], [1, 2])
+    assert dist == 0.0
+
+
+def test_run_exponential_smoothing():
+    import pandas as pd
+    data = pd.Series(np.sin(np.linspace(0, 10, 100)))
+    model = run_exponential_smoothing(data, trend=None, seasonal=None)
+    assert model is not None
+
+
+def test_run_chisquare_test():
+    stat, p = run_chisquare_test([10, 10], [10, 10])
+    assert stat == 0.0
+    assert p == 1.0
+
 
 
 

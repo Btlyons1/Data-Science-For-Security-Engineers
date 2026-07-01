@@ -522,3 +522,140 @@ def calculate_evt_threshold(data: Union[np.ndarray, Sequence[float]], extreme_qu
     return float(t_val)
 
 
+def calculate_mad(data: Union[np.ndarray, Sequence[float]], nan_policy: str = 'propagate') -> float:
+    """
+    Calculate the Median Absolute Deviation (MAD) of a dataset.
+    """
+    from scipy.stats import median_abs_deviation
+    return float(median_abs_deviation(np.array(data), nan_policy=nan_policy))
+
+
+def cohort_zscore(value: float, median: float, mad: float) -> float:
+    """
+    Calculate modified Z-score using precomputed median and MAD.
+    """
+    SCALE = 0.6745
+    if mad == 0:
+        return 0.0 if value == median else float('inf')
+    return SCALE * (value - median) / mad
+
+
+def calculate_skew_kurtosis(data: Union[np.ndarray, Sequence[float]]) -> tuple[float, float]:
+    """
+    Calculate skewness and kurtosis of a dataset.
+    """
+    from scipy.stats import skew, kurtosis
+    arr = np.array(data)
+    return float(skew(arr)), float(kurtosis(arr))
+
+
+def plot_qq(data: Union[np.ndarray, Sequence[float]], ax=None, dist: str = "norm") -> None:
+    """
+    Generate a Q-Q plot of data.
+    """
+    from scipy import stats
+    stats.probplot(np.array(data), dist=dist, plot=ax)
+
+
+def calculate_poisson_pmf(events: Union[np.ndarray, Sequence[int]], lam: float) -> np.ndarray:
+    """
+    Calculate the Probability Mass Function (PMF) of a Poisson distribution.
+    """
+    from scipy.stats import poisson
+    return poisson.pmf(np.array(events), lam)
+
+
+def calculate_mahalanobis_distance(pt: Union[np.ndarray, Sequence[float]], mean: np.ndarray, inv_cov: np.ndarray) -> float:
+    """
+    Calculate the Mahalanobis distance of a point.
+    """
+    from scipy.spatial.distance import mahalanobis
+    return float(mahalanobis(pt, mean, inv_cov))
+
+
+def calculate_chi2_threshold(probability: float, df: int) -> float:
+    """
+    Calculate threshold under Chi-Square distribution using Percent Point Function (PPF).
+    """
+    from scipy.stats import chi2
+    return float(chi2.ppf(probability, df=df))
+
+
+def decompose_time_series(data: pd.Series, model: str = 'additive', period: int = 24):
+    """
+    Decompose a time series into trend, seasonal, and residual components.
+    """
+    from statsmodels.tsa.seasonal import seasonal_decompose
+    return seasonal_decompose(data, model=model, period=period)
+
+
+def run_adfuller_test(data: Union[np.ndarray, Sequence[float]]):
+    """
+    Run the Augmented Dickey-Fuller (ADF) test for stationarity.
+    """
+    from statsmodels.tsa.stattools import adfuller
+    return adfuller(np.array(data))
+
+
+def calculate_rfft(data: Union[np.ndarray, Sequence[float]], d: float = 1.0) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Calculate the Real Fast Fourier Transform (RFFT) and frequencies.
+    """
+    from scipy.fft import rfft, rfftfreq
+    arr = np.array(data)
+    yf = np.abs(rfft(arr))
+    xf = rfftfreq(len(arr), d=d)
+    return yf, xf
+
+
+def apply_median_filter(data: Union[np.ndarray, Sequence[float]], kernel_size: int = 5) -> np.ndarray:
+    """
+    Apply a 1D median filter to the input data.
+    """
+    from scipy.signal import medfilt
+    return medfilt(np.array(data), kernel_size=kernel_size)
+
+
+def apply_savgol_filter(data: Union[np.ndarray, Sequence[float]], window_length: int = 15, polyorder: int = 3) -> np.ndarray:
+    """
+    Apply a Savitzky-Golay filter to the input data.
+    """
+    from scipy.signal import savgol_filter
+    return savgol_filter(np.array(data), window_length=window_length, polyorder=polyorder)
+
+
+def run_ks_test(d1: Union[np.ndarray, Sequence[float]], d2: Union[np.ndarray, Sequence[float]]) -> tuple[float, float]:
+    """
+    Run the two-sample Kolmogorov-Smirnov test.
+    """
+    from scipy.stats import ks_2samp
+    res = ks_2samp(np.array(d1), np.array(d2))
+    return float(res.statistic), float(res.pvalue)
+
+
+def calculate_wasserstein_distance(d1: Union[np.ndarray, Sequence[float]], d2: Union[np.ndarray, Sequence[float]]) -> float:
+    """
+    Calculate the Earth Mover's (Wasserstein) distance between two distributions.
+    """
+    from scipy.stats import wasserstein_distance
+    return float(wasserstein_distance(np.array(d1), np.array(d2)))
+
+
+def run_exponential_smoothing(data: pd.Series, trend: str = 'additive', seasonal: str = 'additive', seasonal_periods: int = 7):
+    """
+    Fit Holt-Winters Exponential Smoothing model.
+    """
+    from statsmodels.tsa.holtwinters import ExponentialSmoothing
+    return ExponentialSmoothing(data, trend=trend, seasonal=seasonal, seasonal_periods=seasonal_periods).fit()
+
+
+def run_chisquare_test(observed: Union[np.ndarray, Sequence[float]], expected: Union[np.ndarray, Sequence[float]]) -> tuple[float, float]:
+    """
+    Perform a Chi-Square goodness-of-fit test.
+    """
+    from scipy.stats import chisquare
+    res = chisquare(np.array(observed), f_exp=np.array(expected))
+    return float(res.statistic), float(res.pvalue)
+
+
+

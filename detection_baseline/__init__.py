@@ -15,7 +15,23 @@ from detection_baseline.statistics import (
     chi_square_shift,
     dynamic_time_warping_distance,
     detect_s_h_esd,
-    calculate_evt_threshold
+    calculate_evt_threshold,
+    calculate_mad,
+    cohort_zscore,
+    calculate_skew_kurtosis,
+    plot_qq,
+    calculate_poisson_pmf,
+    calculate_mahalanobis_distance,
+    calculate_chi2_threshold,
+    decompose_time_series,
+    run_adfuller_test,
+    calculate_rfft,
+    apply_median_filter,
+    apply_savgol_filter,
+    run_ks_test,
+    calculate_wasserstein_distance,
+    run_exponential_smoothing,
+    run_chisquare_test
 )
 from detection_baseline.probabilistic import (
     calculate_detection_effectiveness,
@@ -38,7 +54,10 @@ from detection_baseline.automation import (
     analyze_timing_regularity,
     analyze_session_burstiness,
     fano_factor,
-    analyze_ai_agent_autonomy
+    analyze_ai_agent_autonomy,
+    calculate_shannon_entropy,
+    calculate_lag_1_autocorrelation,
+    calculate_fano_factor
 )
 from detection_baseline.detectors import (
     FirstSeenDetector
@@ -64,6 +83,22 @@ __all__ = [
     'dynamic_time_warping_distance',
     'detect_s_h_esd',
     'calculate_evt_threshold',
+    'calculate_mad',
+    'cohort_zscore',
+    'calculate_skew_kurtosis',
+    'plot_qq',
+    'calculate_poisson_pmf',
+    'calculate_mahalanobis_distance',
+    'calculate_chi2_threshold',
+    'decompose_time_series',
+    'run_adfuller_test',
+    'calculate_rfft',
+    'apply_median_filter',
+    'apply_savgol_filter',
+    'run_ks_test',
+    'calculate_wasserstein_distance',
+    'run_exponential_smoothing',
+    'run_chisquare_test',
     'calculate_detection_effectiveness',
     'required_fpr_for_precision',
     'calculate_precision',
@@ -81,6 +116,9 @@ __all__ = [
     'analyze_session_burstiness',
     'fano_factor',
     'analyze_ai_agent_autonomy',
+    'calculate_shannon_entropy',
+    'calculate_lag_1_autocorrelation',
+    'calculate_fano_factor',
     'FirstSeenDetector',
     'recommend_anomaly_detector',
     'datasets'

@@ -53,10 +53,10 @@ def calculate_detection_effectiveness(
     print(f'  True positives (caught):  {expected_true_positives:.1f}')
     print(f'  False positives:          {expected_false_positives:.1f}')
     print(f'  Total alerts:             {total_alerts:.1f}\n')
-    print(f'📊 PRECISION: {p_attack_given_alert*100:.1f}% of alerts are true attacks')
+    print(f' PRECISION: {p_attack_given_alert*100:.1f}% of alerts are true attacks')
     
     if p_attack_given_alert < 0.5:
-        print(f'\n⚠️  WARNING: Most of your alerts are FALSE POSITIVES!')
+        print(f'\n  WARNING: Most of your alerts are FALSE POSITIVES!')
         ratio = (1.0 - p_attack_given_alert) / p_attack_given_alert if p_attack_given_alert > 0 else float('inf')
         print(f'   For every true attack, you have {ratio:.1f} false alerts\n')
     

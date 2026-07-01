@@ -227,3 +227,50 @@ def analyze_ai_agent_autonomy(events: list[dict[str, Any]]) -> dict[str, Any]:
         'risk_signals': risk_signals,
         'alert': len(risk_signals) > 0
     }
+
+
+def calculate_shannon_entropy(intervals: Union[np.ndarray, Sequence[float]], bin_size: float = 0.1, max_val: float = 10.0) -> float:
+    """
+    Quantize intervals and calculate Shannon Entropy.
+    """
+    arr = np.array(intervals)
+    if len(arr) == 0:
+        return 0.0
+    bins = np.arange(0, max_val + bin_size, bin_size)
+    counts, _ = np.histogram(arr, bins=bins)
+    probs = counts / np.sum(counts)
+    probs = probs[probs > 0] # Filter zero probabilities
+    return float(-np.sum(probs * np.log2(probs)))
+
+
+def calculate_lag_1_autocorrelation(intervals: Union[np.ndarray, Sequence[float]]) -> float:
+    """
+    Calculate the lag-1 autocorrelation coefficient of sequential intervals.
+    """
+    arr = np.array(intervals)
+    if len(arr) < 3:
+        return 0.0
+    x = arr[:-1]
+    y = arr[1:]
+    corr = np.corrcoef(x, y)[0, 1]
+    return float(corr) if not np.isnan(corr) else 0.0
+
+
+def calculate_fano_factor(timestamps: Union[np.ndarray, Sequence[float]], window_seconds: float) -> float:
+    """
+    Compute the Fano Factor (variance / mean) of event counts per window.
+    """
+    arr = np.array(timestamps)
+    if len(arr) < 2:
+        return 0.0
+    duration = arr[-1] - arr[0]
+    n_windows = max(1, int(duration / window_seconds))
+    counts = np.zeros(n_windows)
+    for t in arr:
+        idx = min(int((t - arr[0]) / window_seconds), n_windows - 1)
+        counts[idx] += 1
+    mean_count = np.mean(counts)
+    if mean_count == 0:
+        return 0.0
+    return float(np.var(counts) / mean_count)
+
